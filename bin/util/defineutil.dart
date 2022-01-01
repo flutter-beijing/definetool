@@ -19,6 +19,7 @@ class DefineUtil {
     ".ts",
     ".php",
     ".cs",
+    ".podspec",
     ".swift",
     ".py"
   ];
