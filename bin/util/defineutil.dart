@@ -574,7 +574,7 @@ class DefineUtil {
       print("\n" + codeList[i].path);
       var endName = FileUtil.getEndName(codeList[i].path);
       List<int> data = FileUtil.readData(codeList[i].path);
-      if (endName == ".yaml") {
+      if (endName == ".yaml" || endName == ".podspec") {
         List<int> temp = definedFile22(data);
         FileUtil.writeToFileData(temp, codeList[i].path);
       } else {
