@@ -8,7 +8,20 @@ import 'FileUtil.dart';
 class DefineUtil {
   List<String> exdirList = ["bin", "build", ".git", ".svn", "debug", "release"];
   List<String> definesList = []; //要开启的宏
-  List<String> fileNameList = [".dart", ".yaml", ".java", ".kt",".go",".rs",".js",".ts",".php",".cs",".swift",".py"];
+  List<String> fileNameList = [
+    ".dart",
+    ".yaml",
+    ".java",
+    ".kt",
+    ".go",
+    ".rs",
+    ".js",
+    ".ts",
+    ".php",
+    ".cs",
+    ".swift",
+    ".py"
+  ];
   List<File> codeList = [];
   //要开启的宏定义名字
   String defineName = "WINDOWS";
@@ -18,8 +31,8 @@ class DefineUtil {
   String dirpath = "";
 
   //初始化
-  DefineUtil(this.dirpath,
-     {
+  DefineUtil(
+    this.dirpath, {
     List<String>? exdir,
     List<String>? defines,
   }) {
@@ -44,22 +57,20 @@ class DefineUtil {
         var endName = FileUtil.getEndName(file.path);
         if (fileNameList.contains(endName)) {
           List<int> data = FileUtil.readData(file.path);
-          if(isCon(data, "#ifdef".codeUnits)){
-            File filebak = File(file.path+".bak");
-            if(!filebak.existsSync()){
-              filebak.createSync();
-            }
-            if(data.length>0){
-              FileUtil.writeToFileData(data, filebak.path);
-            }
+          if (isCon(data, "#ifdef".codeUnits)) {
+            // File filebak = File(file.path+".bak");
+            // if(!filebak.existsSync()){
+            //   filebak.createSync();
+            // }
+            // if(data.length>0){
+            //   FileUtil.writeToFileData(data, filebak.path);
+            // }
             codeList.add(File(file.path));
           }
-          
         }
       }
     }
   }
-
 
   //判断List指定位置是否和list2一致
   bool strcmp(List<int> list, int index, List<int> list2) {
@@ -167,9 +178,9 @@ class DefineUtil {
   }
 
   bool isConList(List<int> list, List<String> list2) {
-    for(int i=0;i<list2.length;i++){
+    for (int i = 0; i < list2.length; i++) {
       var item = list2[i].codeUnits;
-      if(isCon(list, item)){
+      if (isCon(list, item)) {
         return true;
       }
     }
@@ -462,9 +473,10 @@ class DefineUtil {
     for (int i = 0; i < lines.length - 1; i++) {
       List<int> curline = lines[i];
       List<int> nextline = lines[i + 1];
-      if (isCon(curline, "#ifdef".codeUnits) && !isCon(curline, "\"".codeUnits)) {
+      if (isCon(curline, "#ifdef".codeUnits) &&
+          !isCon(curline, "\"".codeUnits)) {
         if (isConList(curline, definesList)) {
-          print("第${i+1}行 去除注释");
+          print("第${i + 1}行 去除注释");
           isDelComment = true;
           isAddComment = false;
           //删除下一行的/*
@@ -475,25 +487,25 @@ class DefineUtil {
         } else {
           isDelComment = false;
           isAddComment = true;
-          print("第${i+1}行 找到#ifdef");
+          print("第${i + 1}行 找到#ifdef");
           if (!isCon(nextline, "/*".codeUnits)) {
             nextline.insertAll(0, "/*".codeUnits);
           }
         }
-      } else if (isCon(curline, "#endif".codeUnits) && !isCon(curline, "\"".codeUnits)) {
+      } else if (isCon(curline, "#endif".codeUnits) &&
+          !isCon(curline, "\"".codeUnits)) {
         if (isAddComment && !isCon(upline, "*/".codeUnits)) {
           upline.addAll("*/".codeUnits);
         }
         if (isDelComment && isCon(upline, "*/".codeUnits)) {
-          if(upline[upline.length-1] == "\r".codeUnitAt(0)){
-              upline.removeLast();
-              upline.removeLast();
-              upline.removeLast();
-            }else{
-              upline.removeLast();
-              upline.removeLast();
-            }
-          
+          if (upline[upline.length - 1] == "\r".codeUnitAt(0)) {
+            upline.removeLast();
+            upline.removeLast();
+            upline.removeLast();
+          } else {
+            upline.removeLast();
+            upline.removeLast();
+          }
         }
       }
       upline = curline;
@@ -509,23 +521,25 @@ class DefineUtil {
   List<int> definedFile22(List<int> data) {
     List<int> buffer = [];
     List<List<int>> lines = splitCode(data);
-    
+
     int endindex = 0; //endif所在的行
     for (int i = 0; i < lines.length; i++) {
       List<int> curline = lines[i];
       List<int> nextline = lines[i];
-      if(i!=lines.length-1){
-        nextline = lines[i+1];
+      if (i != lines.length - 1) {
+        nextline = lines[i + 1];
       }
-      if (isCon(curline, "#ifdef".codeUnits) && !isCon(curline, "\"".codeUnits)) {
+      if (isCon(curline, "#ifdef".codeUnits) &&
+          !isCon(curline, "\"".codeUnits)) {
         for (int j = i; j < lines.length; j++) {
-          if (isCon(lines[j], "#endif".codeUnits) && !isCon(curline, "\"".codeUnits)) {
+          if (isCon(lines[j], "#endif".codeUnits) &&
+              !isCon(curline, "\"".codeUnits)) {
             endindex = j;
             break;
           }
         }
         if (isConList(curline, definesList)) {
-          print("第${i+1}行 去除注释");
+          print("第${i + 1}行 去除注释");
           //删除#
           for (int j = i + 1; j < endindex; j++) {
             nextline = lines[j];
@@ -534,7 +548,7 @@ class DefineUtil {
             }
           }
         } else {
-          print("第${i+1}行 找到#ifdef");
+          print("第${i + 1}行 找到#ifdef");
           for (int j = i + 1; j < endindex; j++) {
             nextline = lines[j];
             if (!isCon(nextline, "#".codeUnits)) {
@@ -554,15 +568,15 @@ class DefineUtil {
   //开始执行转换
   void start() {
     _doFileListDir(dirpath);
-    
-    for(int i=0;i<codeList.length;i++){
-      print("\n"+codeList[i].path);
+
+    for (int i = 0; i < codeList.length; i++) {
+      print("\n" + codeList[i].path);
       var endName = FileUtil.getEndName(codeList[i].path);
       List<int> data = FileUtil.readData(codeList[i].path);
-      if(endName == ".yaml"){
+      if (endName == ".yaml") {
         List<int> temp = definedFile22(data);
         FileUtil.writeToFileData(temp, codeList[i].path);
-      }else{
+      } else {
         List<int> temp = definedFile11(data);
         FileUtil.writeToFileData(temp, codeList[i].path);
       }
